@@ -12,9 +12,16 @@ if not vim.loop.fs_stat(lazypath) then
   })
 end
 vim.opt.rtp:prepend(lazypath)
-
+vim.cmd([[autocmd BufEnter * silent! lcd %:p:h]])
 -- local opts = {}
 -- require("vim-options")
+
+
+
+local lang__mappings = require("lang_shortcuts.mappings")
+lang__mappings.cpp_mappings()
+
+
 require("vim-options")
 require("lazy").setup("plugins")
 

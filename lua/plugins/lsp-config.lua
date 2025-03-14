@@ -1,6 +1,13 @@
 return {
   {
   "williamboman/mason.nvim",
+    opts = {
+      ensure_installed={
+        "clangd",
+        "clang-format",
+        "codelldb",
+      }
+    },
   config = function()
     require("mason").setup()
   end
@@ -9,7 +16,15 @@ return {
     "williamboman/mason-lspconfig.nvim",
     config = function()
       require("mason-lspconfig").setup({
-        ensure_installed = {"lua_ls","tsserver"}
+        ensure_installed = {"lua_ls","tsserver","jdtls"}
+      })
+    end
+  },
+  {
+    "jay-babu/mason-nvim-dap.nvim",
+    config = function()
+      require("mason-nvim-dap").setup({
+        ensure_installed = {"codelldb","java-debug-adapter","java-test"}
       })
     end
   },
@@ -27,10 +42,19 @@ return {
       lspconfig.tsserver.setup({
         capabilities = capabilities
       })
-
+      lspconfig.clangd.setup({
+        capabilities = capabilities
+      })
       vim.keymap.set('n','k',vim.lsp.buf.hover,{})
       vim.keymap.set('n','gd',vim.lsp.buf.definition,{})
       vim.keymap.set({'n','v'},'<leader>ca',vim.lsp.buf.code_action,{})
     end
+  },
+  -- configure the java server
+  {
+    "mfussenegger/nvim-jdtls",
+    dependencies = {
+      "mfussenegger/nvim-dap",
+    }
   }
 }

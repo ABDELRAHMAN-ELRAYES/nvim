@@ -1,6 +1,6 @@
 return {
   {
-    -- for execution go lang 
+    -- for execution go lang
     "ray-x/go.nvim",
     "fatih/vim-go",
   },
@@ -18,10 +18,36 @@ return {
       require("dapui").setup()
       require("dap-go").setup()
 
-      dap.listeners.before.attach.dapui_config = function()
-        dapui.open()
-      end
-      dap.listeners.before.launch.dapui_config = function()
+      -- configure dap for cpp
+      dap.adapters.codelldb = {
+        type = "server",
+        port = "${port}",
+        executable = {
+          command = "codelldb",
+          args = { "--port", "${port}" },
+        },
+      }
+      dap.configurations.cpp = {
+        {
+          name = "Launch file",
+          type = "codelldb",
+          request = "launch",
+          program = function()
+            return vim.fn.input("path to executable: ", vim.fn.getcwd() .. "/", "file")
+          end,
+          cwd = "${workspaceFolder}",
+          stopEntry = false,
+          args = {},
+        },
+      }
+      -- end of configuration of cpp
+      --dap.listeners.before.attach.dapui_config = function()
+        --dapui.open()
+      --end
+      --dap.listeners.before.launch.dapui_config = function()
+        --dapui.open()
+      --end
+      dap.listeners.after.event_initialized.dapui = function()
         dapui.open()
       end
       dap.listeners.before.event_terminated.dapui_config = function()
