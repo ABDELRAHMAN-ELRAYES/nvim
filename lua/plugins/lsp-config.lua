@@ -66,6 +66,13 @@ return {
     "neovim/nvim-lspconfig",
     config = function()
       local capabilities = require('cmp_nvim_lsp').default_capabilities()
+      local function exepath_or(name)
+        local p = vim.fn.exepath(name)
+        if p == nil or p == "" then
+          return name
+        end
+        return p
+      end
 
       -- Neovim 0.11+ uses the built-in vim.lsp.config/vim.lsp.enable API.
       -- Keep a fallback for older Neovim without triggering deprecation warnings.
@@ -76,7 +83,7 @@ return {
         vim.lsp.config('clangd', {
           capabilities = capabilities,
           cmd = {
-            "clangd",
+            exepath_or("clangd"),
             "--background-index",
             "--clang-tidy",
             "--completion-style=detailed",
@@ -85,6 +92,10 @@ return {
         })
         vim.lsp.config('gopls', {
           capabilities = capabilities,
+          cmd = { exepath_or("gopls") },
+          root_dir = function(bufnr, _)
+            return vim.fs.root(bufnr, { "go.work", "go.mod", ".git" })
+          end,
           settings = {
             gopls = {
               gofumpt = true,
@@ -123,7 +134,7 @@ return {
         lspconfig.clangd.setup({
           capabilities = capabilities,
           cmd = {
-            "clangd",
+            exepath_or("clangd"),
             "--background-index",
             "--clang-tidy",
             "--completion-style=detailed",
@@ -132,6 +143,10 @@ return {
         })
         lspconfig.gopls.setup({
           capabilities = capabilities,
+          cmd = { exepath_or("gopls") },
+          root_dir = function(bufnr, _)
+            return vim.fs.root(bufnr, { "go.work", "go.mod", ".git" })
+          end,
           settings = {
             gopls = {
               gofumpt = true,
@@ -167,6 +182,17 @@ return {
       vim.api.nvim_create_autocmd("BufWritePre", {
         pattern = "*.go",
         callback = function()
+          local has_gopls = false
+          for _, c in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
+            if c.name == "gopls" then
+              has_gopls = true
+              break
+            end
+          end
+          if not has_gopls then
+            return
+          end
+
           local params = vim.lsp.util.make_range_params()
           params.context = { only = { "source.organizeImports" } }
           local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, 1500)
