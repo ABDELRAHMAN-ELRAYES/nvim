@@ -23,6 +23,11 @@ return {
     add_if_executable("erb_lint", function() return null_ls.builtins.diagnostics.erb_lint end)
     add_if_executable("rubocop", function() return null_ls.builtins.diagnostics.rubocop end)
     add_if_executable("rubocop", function() return null_ls.builtins.formatting.rubocop end)
+    add_if_executable("golangci-lint", function() return null_ls.builtins.diagnostics.golangci_lint end)
+    add_if_executable("ruff", function() return null_ls.builtins.diagnostics.ruff end)
+    add_if_executable("ruff", function() return null_ls.builtins.formatting.ruff end)
+    add_if_executable("mypy", function() return null_ls.builtins.diagnostics.mypy end)
+    add_if_executable("hadolint", function() return null_ls.builtins.diagnostics.hadolint end)
 
     null_ls.setup({
       sources = sources,
