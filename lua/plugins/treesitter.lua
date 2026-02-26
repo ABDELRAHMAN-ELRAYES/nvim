@@ -2,8 +2,12 @@ return  {
   "nvim-treesitter/nvim-treesitter", 
   build = ":TSUpdate",
   config = function()
-    local config = require("nvim-treesitter.configs")
-    config.setup({
+    local ok, configs = pcall(require, "nvim-treesitter.configs")
+    if not ok then
+      return
+    end
+
+    configs.setup({
       auto_install = true,
       ensure_installed = {"lua" ,"javascript", "c", "cpp","typescript", "tsx", "rust", "go", "python"}, 
       highlight = { enable = true },
