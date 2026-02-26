@@ -1,20 +1,14 @@
 return {
-  "d-Dudas/bearded.nvim",
+  "xStormyy/bearded-theme.nvim",
   lazy = false,
   priority = 1002,
   config = function()
     require("bearded").setup({
-      style = {
-        transparent = true,
-        italic_comments = true,
-        italic_keywords = false,
-        bold_functions = true,
-        dim_inactive = false,
-        float_blend = 0,
-      },
+      theme = "arc",         -- Arc family
+      variant = "blueberry", -- Arc Blueberry variant
+      transparent = true,
     })
-    vim.cmd.colorscheme("bearded")
+    vim.cmd.colorscheme("bearded-arc-blueberry")
   end,
 }
-
 
