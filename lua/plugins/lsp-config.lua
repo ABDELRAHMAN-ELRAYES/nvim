@@ -1,46 +1,66 @@
 return {
   {
   "williamboman/mason.nvim",
+  config = function(_, opts)
+    require("mason").setup(opts)
+  end,
+  },
+  {
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
+    dependencies = { "williamboman/mason.nvim" },
     opts = {
-      ensure_installed={
+      ensure_installed = {
+        -- C/C++
         "clangd",
         "clang-format",
         "codelldb",
+
+        -- Go
         "gopls",
         "goimports",
         "gofumpt",
         "golangci-lint",
         "delve",
+
+        -- Node/TS
         "typescript-language-server",
         "prettier",
         "eslint_d",
+
+        -- Python
         "pyright",
         "ruff",
         "black",
         "isort",
+
+        -- Docker
         "dockerfile-language-server",
         "hadolint",
-      }
+      },
+      auto_update = false,
+      run_on_start = true,
     },
-  config = function()
-    require("mason").setup()
-  end
+    config = function(_, opts)
+      require("mason-tool-installer").setup(opts)
+    end,
   },
   {
     "williamboman/mason-lspconfig.nvim",
-    config = function()
-      require("mason-lspconfig").setup({
-        ensure_installed = { "lua_ls", "ts_ls", "jdtls", "clangd", "gopls", "pyright", "dockerls" }
-      })
-    end
+    config = function(_, opts)
+      require("mason-lspconfig").setup(opts)
+    end,
+    opts = {
+      ensure_installed = { "lua_ls", "ts_ls", "jdtls", "clangd", "gopls", "pyright", "dockerls" },
+    },
   },
   {
     "jay-babu/mason-nvim-dap.nvim",
-    config = function()
-      require("mason-nvim-dap").setup({
-        ensure_installed = { "codelldb", "delve", "java-debug-adapter", "java-test" }
-      })
-    end
+    config = function(_, opts)
+      require("mason-nvim-dap").setup(opts)
+    end,
+    opts = {
+      ensure_installed = { "codelldb", "delve", "java-debug-adapter", "java-test" },
+    },
   },
   {
     "neovim/nvim-lspconfig",

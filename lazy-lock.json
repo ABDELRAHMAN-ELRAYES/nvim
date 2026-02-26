@@ -10,6 +10,7 @@
   "lualine.nvim": { "branch": "master", "commit": "47f91c416daef12db467145e16bed5bbfe00add8" },
   "mason-lspconfig.nvim": { "branch": "main", "commit": "2ab512d3d8e2fd1f679543c13e0dc4606c3d3d2e" },
   "mason-nvim-dap.nvim": { "branch": "main", "commit": "9a10e096703966335bd5c46c8c875d5b0690dade" },
+  "mason-tool-installer.nvim": { "branch": "main", "commit": "443f1ef8b5e6bf47045cb2217b6f748a223cf7dc" },
   "mason.nvim": { "branch": "main", "commit": "44d1e90e1f66e077268191e3ee9d2ac97cc18e65" },
   "neo-tree.nvim": { "branch": "v3.x", "commit": "9d6826582a3e8c84787bd7355df22a2812a1ad59" },
   "none-ls.nvim": { "branch": "main", "commit": "f61f46ded0ca9edce7a09b674f8e162d10921426" },
