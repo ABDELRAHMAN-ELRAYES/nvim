@@ -9,6 +9,9 @@ return {
     "WhoIsSethDaniel/mason-tool-installer.nvim",
     dependencies = { "williamboman/mason.nvim" },
     opts = {
+      servers = {
+        snyk_ls = { enabled = false },
+      },
       ensure_installed = {
         -- C/C++
         "clangd",
