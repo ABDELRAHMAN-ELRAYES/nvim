@@ -25,10 +25,13 @@ return {
         "golangci-lint",
         "delve",
 
-        -- Node/TS
+        -- Node/TS/React
         "typescript-language-server",
         "prettier",
         "eslint_d",
+        "json-lsp",
+        "css-lsp",
+        "tailwindcss-language-server",
 
         -- Python
         "pyright",
@@ -39,6 +42,9 @@ return {
         -- Docker
         "dockerfile-language-server",
         "hadolint",
+
+        -- C++ build system
+        "cmake-language-server",
       },
       auto_update = false,
       run_on_start = true,
@@ -53,7 +59,7 @@ return {
       require("mason-lspconfig").setup(opts)
     end,
     opts = {
-      ensure_installed = { "lua_ls", "ts_ls", "jdtls", "clangd", "gopls", "pyright", "dockerls" },
+      ensure_installed = { "lua_ls", "ts_ls", "jdtls", "clangd", "gopls", "pyright", "dockerls", "jsonls", "cssls", "tailwindcss", "cmake" },
     },
   },
   {
@@ -82,7 +88,41 @@ return {
       if vim.lsp.config and vim.lsp.enable then
         vim.lsp.config('lua_ls', { capabilities = capabilities })
         vim.lsp.config('html', { capabilities = capabilities })
-        vim.lsp.config('ts_ls', { capabilities = capabilities })
+        vim.lsp.config('ts_ls', {
+          capabilities = capabilities,
+          settings = {
+            typescript = {
+              inlayHints = {
+                includeInlayParameterNameHints = "all",
+                includeInlayFunctionParameterTypeHints = true,
+                includeInlayVariableTypeHints = true,
+                includeInlayPropertyDeclarationTypeHints = true,
+                includeInlayFunctionLikeReturnTypeHints = true,
+              },
+              preferences = {
+                importModuleSpecifier = "relative",   -- prefer relative imports
+                includeCompletionsForModuleExports = true,
+                includeCompletionsWithSnippetText = true,
+              },
+            },
+            javascript = {
+              inlayHints = {
+                includeInlayParameterNameHints = "all",
+                includeInlayFunctionParameterTypeHints = true,
+                includeInlayVariableTypeHints = true,
+              },
+              preferences = {
+                importModuleSpecifier = "relative",
+                includeCompletionsForModuleExports = true,
+              },
+            },
+          },
+          -- Disable tsserver's built-in formatter; use prettier (none-ls) instead
+          on_attach = function(client)
+            client.server_capabilities.documentFormattingProvider = false
+            client.server_capabilities.documentRangeFormattingProvider = false
+          end,
+        })
         vim.lsp.config('clangd', {
           capabilities = capabilities,
           cmd = {
@@ -128,12 +168,71 @@ return {
 
         vim.lsp.config('dockerls', { capabilities = capabilities })
 
-        vim.lsp.enable({ 'lua_ls', 'html', 'ts_ls', 'clangd', 'gopls', 'pyright', 'dockerls' })
+        -- JSON with schema validation
+        vim.lsp.config('jsonls', {
+          capabilities = capabilities,
+          settings = {
+            json = {
+              schemas = {},         -- populated by on_new_config once schemastore loads
+              validate = { enable = true },
+            },
+          },
+          on_new_config = function(config)
+            local ok, ss = pcall(require, 'schemastore')
+            if ok then
+              config.settings.json.schemas = ss.json.schemas()
+            end
+          end,
+        })
+
+        -- CSS / SCSS / Less
+        vim.lsp.config('cssls', { capabilities = capabilities })
+
+        -- Tailwind CSS (activates only in projects that use it)
+        vim.lsp.config('tailwindcss', { capabilities = capabilities })
+
+        -- CMake for C++ build files
+        vim.lsp.config('cmake', { capabilities = capabilities })
+
+        vim.lsp.enable({ 'lua_ls', 'html', 'ts_ls', 'clangd', 'gopls', 'pyright', 'dockerls', 'jsonls', 'cssls', 'tailwindcss', 'cmake' })
       else
         local lspconfig = require("lspconfig")
         lspconfig.lua_ls.setup({ capabilities = capabilities })
         lspconfig.html.setup({ capabilities = capabilities })
-        lspconfig.ts_ls.setup({ capabilities = capabilities })
+        lspconfig.ts_ls.setup({
+          capabilities = capabilities,
+          settings = {
+            typescript = {
+              inlayHints = {
+                includeInlayParameterNameHints = "all",
+                includeInlayFunctionParameterTypeHints = true,
+                includeInlayVariableTypeHints = true,
+                includeInlayPropertyDeclarationTypeHints = true,
+                includeInlayFunctionLikeReturnTypeHints = true,
+              },
+              preferences = {
+                importModuleSpecifier = "relative",
+                includeCompletionsForModuleExports = true,
+                includeCompletionsWithSnippetText = true,
+              },
+            },
+            javascript = {
+              inlayHints = {
+                includeInlayParameterNameHints = "all",
+                includeInlayFunctionParameterTypeHints = true,
+                includeInlayVariableTypeHints = true,
+              },
+              preferences = {
+                importModuleSpecifier = "relative",
+                includeCompletionsForModuleExports = true,
+              },
+            },
+          },
+          on_attach = function(client)
+            client.server_capabilities.documentFormattingProvider = false
+            client.server_capabilities.documentRangeFormattingProvider = false
+          end,
+        })
         lspconfig.clangd.setup({
           capabilities = capabilities,
           cmd = {
@@ -176,6 +275,27 @@ return {
           },
         })
         lspconfig.dockerls.setup({ capabilities = capabilities })
+
+        -- JSON with schema validation
+        lspconfig.jsonls.setup({
+          capabilities = capabilities,
+          on_new_config = function(config)
+            local ok, ss = pcall(require, 'schemastore')
+            if ok then
+              config.settings.json.schemas = ss.json.schemas()
+            end
+          end,
+          settings = { json = { validate = { enable = true } } },
+        })
+
+        -- CSS / SCSS / Less
+        lspconfig.cssls.setup({ capabilities = capabilities })
+
+        -- Tailwind CSS
+        lspconfig.tailwindcss.setup({ capabilities = capabilities })
+
+        -- CMake
+        lspconfig.cmake.setup({ capabilities = capabilities })
       end
 
       vim.keymap.set('n','k',vim.lsp.buf.hover,{})
