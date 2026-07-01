@@ -10,7 +10,9 @@ return {
     dependencies = { "williamboman/mason.nvim" },
     opts = {
       servers = {
-        snyk_ls = { enabled = false },
+        snyk_ls              = { enabled = false },
+        tsgo                 = { enabled = false }, -- dev-preview only, use ts_ls instead
+        cmake_language_server = { enabled = false }, -- requires Python <3.14, incompatible with 3.14.x
       },
       ensure_installed = {
         -- C/C++
@@ -59,7 +61,7 @@ return {
       require("mason-lspconfig").setup(opts)
     end,
     opts = {
-      ensure_installed = { "lua_ls", "ts_ls", "jdtls", "clangd", "gopls", "pyright", "dockerls", "jsonls", "cssls", "tailwindcss", "cmake" },
+      ensure_installed = { "lua_ls", "ts_ls", "jdtls", "clangd", "gopls", "pyright", "dockerls", "jsonls", "cssls", "tailwindcss" },
     },
   },
   {
@@ -194,7 +196,7 @@ return {
         -- CMake for C++ build files
         vim.lsp.config('cmake', { capabilities = capabilities })
 
-        vim.lsp.enable({ 'lua_ls', 'html', 'ts_ls', 'clangd', 'gopls', 'pyright', 'dockerls', 'jsonls', 'cssls', 'tailwindcss', 'cmake' })
+        vim.lsp.enable({ 'lua_ls', 'html', 'ts_ls', 'clangd', 'gopls', 'pyright', 'dockerls', 'jsonls', 'cssls', 'tailwindcss' })
       else
         local lspconfig = require("lspconfig")
         lspconfig.lua_ls.setup({ capabilities = capabilities })
