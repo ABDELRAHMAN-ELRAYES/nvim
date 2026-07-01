@@ -14,7 +14,6 @@ end
 vim.opt.rtp:prepend(lazypath)
 vim.cmd([[autocmd BufEnter * silent! lcd %:p:h]])
 -- local opts = {}
--- require("vim-options")
 vim.opt.clipboard = "unnamedplus"
 
 vim.api.nvim_create_autocmd({"InsertLeave", "TextChanged"}, {
@@ -34,6 +33,6 @@ vim.api.nvim_create_autocmd("CursorHold", {
   end
 })
 
-require("vim-options")
+require("vim-options")  -- load options before plugins
 require("lazy").setup("plugins")
 

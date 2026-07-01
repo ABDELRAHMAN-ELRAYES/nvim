@@ -2,12 +2,18 @@ return {
   {
     -- for execution go lang
     "ray-x/go.nvim",
+    ft = { "go", "gomod", "gowork", "gotmpl" },
     dependencies = {
       "ray-x/guihua.lua",
       "neovim/nvim-lspconfig",
       "nvim-treesitter/nvim-treesitter",
     },
-    build = ':lua require("go.install").update_all_sync()',
+    build = function()
+      -- only run the build step if Go is actually installed
+      if vim.fn.executable("go") == 1 then
+        vim.cmd('lua require("go.install").update_all_sync()')
+      end
+    end,
     config = function()
       require("go").setup()
     end,

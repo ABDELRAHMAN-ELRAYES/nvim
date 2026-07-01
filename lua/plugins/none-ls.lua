@@ -1,6 +1,6 @@
 return {
   "nvimtools/none-ls.nvim",
-  -- "nvim-telescope/telescope.nvim",
+  dependencies = { "nvimtools/none-ls-extras.nvim" },
   config = function()
     local null_ls = require("null-ls")
     local sources = {
@@ -17,15 +17,16 @@ return {
       end
     end
 
-    add_if_executable("eslint_d", function() return null_ls.builtins.diagnostics.eslint_d end)
-    add_if_executable("eslint_d", function() return null_ls.builtins.code_actions.eslint_d end)
-    add_if_executable("eslint_d", function() return null_ls.builtins.formatting.eslint_d end)
+    -- eslint_d and ruff were moved to none-ls-extras.nvim
+    add_if_executable("eslint_d", function() return require("none-ls.diagnostics.eslint_d") end)
+    add_if_executable("eslint_d", function() return require("none-ls.code_actions.eslint_d") end)
+    add_if_executable("eslint_d", function() return require("none-ls.formatting.eslint_d") end)
     add_if_executable("erb_lint", function() return null_ls.builtins.diagnostics.erb_lint end)
     add_if_executable("rubocop", function() return null_ls.builtins.diagnostics.rubocop end)
     add_if_executable("rubocop", function() return null_ls.builtins.formatting.rubocop end)
     add_if_executable("golangci-lint", function() return null_ls.builtins.diagnostics.golangci_lint end)
-    add_if_executable("ruff", function() return null_ls.builtins.diagnostics.ruff end)
-    add_if_executable("ruff", function() return null_ls.builtins.formatting.ruff end)
+    add_if_executable("ruff", function() return require("none-ls.diagnostics.ruff") end)
+    add_if_executable("ruff", function() return require("none-ls.formatting.ruff") end)
     add_if_executable("mypy", function() return null_ls.builtins.diagnostics.mypy end)
     add_if_executable("hadolint", function() return null_ls.builtins.diagnostics.hadolint end)
 
