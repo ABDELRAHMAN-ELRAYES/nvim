@@ -34,6 +34,7 @@ return {
         "json-lsp",
         "css-lsp",
         "tailwindcss-language-server",
+        "emmet-language-server",
 
         -- Python
         "pyright",
@@ -61,7 +62,7 @@ return {
       require("mason-lspconfig").setup(opts)
     end,
     opts = {
-      ensure_installed = { "lua_ls", "ts_ls", "jdtls", "clangd", "gopls", "pyright", "dockerls", "jsonls", "cssls", "tailwindcss" },
+      ensure_installed = { "lua_ls", "ts_ls", "jdtls", "clangd", "gopls", "pyright", "dockerls", "jsonls", "cssls", "tailwindcss", "emmet_ls" },
     },
   },
   {
@@ -85,9 +86,7 @@ return {
         return p
       end
 
-      -- Neovim 0.11+ uses the built-in vim.lsp.config/vim.lsp.enable API.
-      -- Keep a fallback for older Neovim without triggering deprecation warnings.
-      if vim.lsp.config and vim.lsp.enable then
+      -- Setup servers using Neovim 0.11+ native LSP configuration API
         vim.lsp.config('lua_ls', { capabilities = capabilities })
         vim.lsp.config('html', { capabilities = capabilities })
         vim.lsp.config('ts_ls', {
@@ -193,112 +192,13 @@ return {
         -- Tailwind CSS (activates only in projects that use it)
         vim.lsp.config('tailwindcss', { capabilities = capabilities })
 
+        -- Emmet LSP for fast HTML/JSX expansions
+        vim.lsp.config('emmet_ls', { capabilities = capabilities })
+
         -- CMake for C++ build files
         vim.lsp.config('cmake', { capabilities = capabilities })
 
-        vim.lsp.enable({ 'lua_ls', 'html', 'ts_ls', 'clangd', 'gopls', 'pyright', 'dockerls', 'jsonls', 'cssls', 'tailwindcss' })
-      else
-        local lspconfig = require("lspconfig")
-        lspconfig.lua_ls.setup({ capabilities = capabilities })
-        lspconfig.html.setup({ capabilities = capabilities })
-        lspconfig.ts_ls.setup({
-          capabilities = capabilities,
-          settings = {
-            typescript = {
-              inlayHints = {
-                includeInlayParameterNameHints = "all",
-                includeInlayFunctionParameterTypeHints = true,
-                includeInlayVariableTypeHints = true,
-                includeInlayPropertyDeclarationTypeHints = true,
-                includeInlayFunctionLikeReturnTypeHints = true,
-              },
-              preferences = {
-                importModuleSpecifier = "relative",
-                includeCompletionsForModuleExports = true,
-                includeCompletionsWithSnippetText = true,
-              },
-            },
-            javascript = {
-              inlayHints = {
-                includeInlayParameterNameHints = "all",
-                includeInlayFunctionParameterTypeHints = true,
-                includeInlayVariableTypeHints = true,
-              },
-              preferences = {
-                importModuleSpecifier = "relative",
-                includeCompletionsForModuleExports = true,
-              },
-            },
-          },
-          on_attach = function(client)
-            client.server_capabilities.documentFormattingProvider = false
-            client.server_capabilities.documentRangeFormattingProvider = false
-          end,
-        })
-        lspconfig.clangd.setup({
-          capabilities = capabilities,
-          cmd = {
-            exepath_or("clangd"),
-            "--background-index",
-            "--clang-tidy",
-            "--completion-style=detailed",
-            "--header-insertion=iwyu",
-          },
-        })
-        lspconfig.gopls.setup({
-          capabilities = capabilities,
-          cmd = { exepath_or("gopls") },
-          root_dir = function(bufnr, _)
-            return vim.fs.root(bufnr, { "go.work", "go.mod", ".git" })
-          end,
-          settings = {
-            gopls = {
-              gofumpt = true,
-              staticcheck = true,
-              analyses = {
-                unusedparams = true,
-                nilness = true,
-                unusedwrite = true,
-                useany = true,
-              },
-            },
-          },
-        })
-        lspconfig.pyright.setup({
-          capabilities = capabilities,
-          settings = {
-            python = {
-              analysis = {
-                typeCheckingMode = "basic",
-                autoSearchPaths = true,
-                useLibraryCodeForTypes = true,
-              },
-            },
-          },
-        })
-        lspconfig.dockerls.setup({ capabilities = capabilities })
-
-        -- JSON with schema validation
-        lspconfig.jsonls.setup({
-          capabilities = capabilities,
-          on_new_config = function(config)
-            local ok, ss = pcall(require, 'schemastore')
-            if ok then
-              config.settings.json.schemas = ss.json.schemas()
-            end
-          end,
-          settings = { json = { validate = { enable = true } } },
-        })
-
-        -- CSS / SCSS / Less
-        lspconfig.cssls.setup({ capabilities = capabilities })
-
-        -- Tailwind CSS
-        lspconfig.tailwindcss.setup({ capabilities = capabilities })
-
-        -- CMake
-        lspconfig.cmake.setup({ capabilities = capabilities })
-      end
+        vim.lsp.enable({ 'lua_ls', 'html', 'ts_ls', 'clangd', 'gopls', 'pyright', 'dockerls', 'jsonls', 'cssls', 'tailwindcss', 'emmet_ls' })
 
       vim.keymap.set('n','k',vim.lsp.buf.hover,{})
       vim.keymap.set('n','gd',vim.lsp.buf.definition,{})

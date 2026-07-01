@@ -1,4 +1,5 @@
--- require("config.lazy")
+-- Silence deprecation warnings globally for Neovim 0.11+ compatibility
+vim.deprecate = function() end
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then

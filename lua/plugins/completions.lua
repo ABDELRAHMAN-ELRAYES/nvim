@@ -13,8 +13,14 @@ return {
   },
   {
     "hrsh7th/nvim-cmp",
+    dependencies = {
+      "roobert/tailwindcss-colorizer-cmp.nvim",
+    },
     config = function()
       local cmp = require("cmp")
+      require("tailwindcss-colorizer-cmp").setup({
+        color_square_width = 2,
+      })
       require("luasnip.loaders.from_vscode").lazy_load()
       cmp.setup({
         snippet = {
@@ -25,6 +31,9 @@ return {
         window = {
           completion = cmp.config.window.bordered(),
           documentation = cmp.config.window.bordered(),
+        },
+        formatting = {
+          format = require("tailwindcss-colorizer-cmp").formatter,
         },
         mapping = cmp.mapping.preset.insert({
           ["<C-b>"] = cmp.mapping.scroll_docs(-4),
