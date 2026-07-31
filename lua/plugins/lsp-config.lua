@@ -132,6 +132,7 @@ return {
             "--clang-tidy",
             "--completion-style=detailed",
             "--header-insertion=iwyu",
+            "--fallback-style=google",
           },
         })
         vim.lsp.config('gopls', {
