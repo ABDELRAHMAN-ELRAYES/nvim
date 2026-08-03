@@ -16,3 +16,5 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 })
 
 set_transparent_background()
+
+vim.keymap.set("n", "<Esc>", ":noh<CR>", { desc = "Clear search highlights" })

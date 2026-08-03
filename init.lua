@@ -17,7 +17,7 @@ vim.cmd([[autocmd BufEnter * silent! lcd %:p:h]])
 -- local opts = {}
 vim.opt.clipboard = "unnamedplus"
 
-vim.api.nvim_create_autocmd({"InsertLeave", "TextChanged"}, {
+vim.api.nvim_create_autocmd({"InsertLeave", "FocusLost"}, {
   pattern = "*",
   command = "silent! write",
 })

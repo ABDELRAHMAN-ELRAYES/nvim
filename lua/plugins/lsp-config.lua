@@ -62,6 +62,7 @@ return {
       require("mason-lspconfig").setup(opts)
     end,
     opts = {
+      automatic_enable = false,
       ensure_installed = { "lua_ls", "ts_ls", "jdtls", "clangd", "gopls", "pyright", "dockerls", "jsonls", "cssls", "tailwindcss", "emmet_ls" },
     },
   },
