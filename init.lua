@@ -35,5 +35,12 @@ vim.api.nvim_create_autocmd("CursorHold", {
 })
 
 require("vim-options")  -- load options before plugins
-require("lazy").setup("plugins")
+require("lazy").setup({
+  spec = {
+    { import = "plugins.lsp" },
+    { import = "plugins.git" },
+    { import = "plugins.ui" },
+    { import = "plugins.editor" },
+  }
+})
 
