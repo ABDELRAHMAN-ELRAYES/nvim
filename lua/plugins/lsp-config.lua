@@ -29,7 +29,7 @@ return {
 
         -- Node/TS/React/HTML
         "html-lsp",
-        "typescript-language-server",
+        "vtsls",
         "prettier",
         "eslint_d",
         "json-lsp",
@@ -64,7 +64,7 @@ return {
     end,
     opts = {
       automatic_enable = false,
-      ensure_installed = { "lua_ls", "html", "ts_ls", "jdtls", "clangd", "gopls", "pyright", "dockerls", "jsonls", "cssls", "tailwindcss", "emmet_ls" },
+      ensure_installed = { "lua_ls", "html", "vtsls", "jdtls", "clangd", "gopls", "pyright", "dockerls", "jsonls", "cssls", "tailwindcss", "emmet_ls" },
     },
   },
   {
@@ -91,36 +91,57 @@ return {
       -- Setup servers using Neovim 0.11+ native LSP configuration API
         vim.lsp.config('lua_ls', { capabilities = capabilities })
         vim.lsp.config('html', { capabilities = capabilities })
-        vim.lsp.config('ts_ls', {
+        -- vtsls: modern TS/JS server that also handles embedded <script> in HTML
+        vim.lsp.config('vtsls', {
           capabilities = capabilities,
+          filetypes = {
+            "javascript", "javascriptreact",
+            "typescript", "typescriptreact",
+            "html",   -- enables JS completions inside <script> tags
+          },
+          -- Use on_dir callback style required by Neovim 0.11+ vim.lsp.config API
+          root_dir = function(bufnr, on_dir)
+            local root = vim.fs.root(bufnr, {
+              "tsconfig.json", "tsconfig.base.json",
+              "jsconfig.json", "package.json",
+              "package-lock.json", "yarn.lock", "pnpm-lock.yaml",
+              ".git",
+            }) or vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":h")
+            on_dir(root)
+          end,
           settings = {
             typescript = {
               inlayHints = {
-                includeInlayParameterNameHints = "all",
-                includeInlayFunctionParameterTypeHints = true,
-                includeInlayVariableTypeHints = true,
-                includeInlayPropertyDeclarationTypeHints = true,
-                includeInlayFunctionLikeReturnTypeHints = true,
+                parameterNames = { enabled = "all" },
+                parameterTypes = { enabled = true },
+                variableTypes = { enabled = true },
+                propertyDeclarationTypes = { enabled = true },
+                functionLikeReturnTypes = { enabled = true },
               },
               preferences = {
-                importModuleSpecifier = "relative",   -- prefer relative imports
+                importModuleSpecifier = "relative",
                 includeCompletionsForModuleExports = true,
                 includeCompletionsWithSnippetText = true,
               },
             },
             javascript = {
               inlayHints = {
-                includeInlayParameterNameHints = "all",
-                includeInlayFunctionParameterTypeHints = true,
-                includeInlayVariableTypeHints = true,
+                parameterNames = { enabled = "all" },
+                parameterTypes = { enabled = true },
+                variableTypes = { enabled = true },
               },
               preferences = {
                 importModuleSpecifier = "relative",
                 includeCompletionsForModuleExports = true,
+                includeCompletionsWithSnippetText = true,
               },
             },
+            vtsls = {
+              enableMoveToFileCodeAction = true,
+              autoUseWorkspaceTsdk = true,
+            },
           },
-          -- Disable tsserver's built-in formatter; use prettier (none-ls) instead
+          -- Disable built-in formatter; use prettier (none-ls) instead
           on_attach = function(client)
             client.server_capabilities.documentFormattingProvider = false
             client.server_capabilities.documentRangeFormattingProvider = false
@@ -201,7 +222,7 @@ return {
         -- CMake for C++ build files
         vim.lsp.config('cmake', { capabilities = capabilities })
 
-        vim.lsp.enable({ 'lua_ls', 'html', 'ts_ls', 'clangd', 'gopls', 'pyright', 'dockerls', 'jsonls', 'cssls', 'tailwindcss', 'emmet_ls' })
+        vim.lsp.enable({ 'lua_ls', 'html', 'vtsls', 'clangd', 'gopls', 'pyright', 'dockerls', 'jsonls', 'cssls', 'tailwindcss', 'emmet_ls' })
 
       vim.keymap.set('n','k',vim.lsp.buf.hover,{})
       vim.keymap.set('n','gd',vim.lsp.buf.definition,{})
