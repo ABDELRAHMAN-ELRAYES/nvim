@@ -9,9 +9,13 @@ return {
       enable_close_on_slash = true, -- close on </
     },
     per_filetype = {
-      ["html"] = { enable_close = true },
-      ["jsx"]  = { enable_close = true },
-      ["tsx"]  = { enable_close = true },
+      ["html"]             = { enable_close = true },
+      ["jsx"]              = { enable_close = true },
+      ["tsx"]              = { enable_close = true },
+      ["javascript"]       = { enable_close = true },
+      ["typescript"]       = { enable_close = true },
+      ["javascriptreact"]  = { enable_close = true },
+      ["typescriptreact"]  = { enable_close = true },
     },
   },
 }

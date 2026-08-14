@@ -22,6 +22,14 @@ return {
         color_square_width = 2,
       })
       require("luasnip.loaders.from_vscode").lazy_load()
+
+      -- Web filetypes that get Emmet completions
+      local web_fts = {
+        html = true, css = true, scss = true,
+        javascript = true, javascriptreact = true,
+        typescript = true, typescriptreact = true,
+      }
+
       cmp.setup({
         snippet = {
           expand = function(args)
@@ -50,6 +58,18 @@ return {
           { name = "path" },
         }),
       })
+
+      -- Filetype-specific: Emmet completions only for web files
+      cmp.setup.filetype(vim.tbl_keys(web_fts), {
+        sources = cmp.config.sources({
+          { name = "nvim_lsp" },   -- includes emmet_ls results
+          { name = "luasnip" },
+        }, {
+          { name = "buffer" },
+          { name = "path" },
+        }),
+      })
     end,
   },
 }
+

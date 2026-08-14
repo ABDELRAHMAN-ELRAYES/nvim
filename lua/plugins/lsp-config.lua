@@ -27,7 +27,8 @@ return {
         "golangci-lint",
         "delve",
 
-        -- Node/TS/React
+        -- Node/TS/React/HTML
+        "html-lsp",
         "typescript-language-server",
         "prettier",
         "eslint_d",
@@ -63,7 +64,7 @@ return {
     end,
     opts = {
       automatic_enable = false,
-      ensure_installed = { "lua_ls", "ts_ls", "jdtls", "clangd", "gopls", "pyright", "dockerls", "jsonls", "cssls", "tailwindcss", "emmet_ls" },
+      ensure_installed = { "lua_ls", "html", "ts_ls", "jdtls", "clangd", "gopls", "pyright", "dockerls", "jsonls", "cssls", "tailwindcss", "emmet_ls" },
     },
   },
   {
