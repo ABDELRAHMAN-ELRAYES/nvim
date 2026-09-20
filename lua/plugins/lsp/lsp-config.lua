@@ -228,6 +228,39 @@ return {
       vim.keymap.set('n','gd',vim.lsp.buf.definition,{})
       vim.keymap.set({'n','v'},'<leader>ca',vim.lsp.buf.code_action,{})
 
+      -- Ctrl + Click to go to definition (VSCode style)
+      vim.keymap.set("n", "<C-LeftMouse>", "<LeftMouse><cmd>lua vim.lsp.buf.definition()<CR>", { desc = "Go to definition (Ctrl+Click)" })
+      vim.keymap.set("i", "<C-LeftMouse>", "<Esc><LeftMouse><cmd>lua vim.lsp.buf.definition()<CR>", { desc = "Go to definition (Ctrl+Click)" })
+
+      -- Highlight & underline symbol and all its references on hover
+      vim.api.nvim_create_autocmd("LspAttach", {
+        callback = function(args)
+          local client = vim.lsp.get_client_by_id(args.data.client_id)
+          if client and client.server_capabilities.documentHighlightProvider then
+            local group = vim.api.nvim_create_augroup("lsp_document_highlight_" .. args.buf, { clear = true })
+            vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+              buffer = args.buf,
+              group = group,
+              callback = vim.lsp.buf.document_highlight,
+            })
+            vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+              buffer = args.buf,
+              group = group,
+              callback = vim.lsp.buf.clear_references,
+            })
+          end
+        end,
+      })
+
+      local function set_lsp_highlights()
+        vim.api.nvim_set_hl(0, "LspReferenceText", { underline = true, bold = true, bg = "#313244", sp = "#89b4fa" })
+        vim.api.nvim_set_hl(0, "LspReferenceRead", { underline = true, bold = true, bg = "#313244", sp = "#a6e3a1" })
+        vim.api.nvim_set_hl(0, "LspReferenceWrite", { underline = true, bold = true, bg = "#313244", sp = "#f38ba8" })
+      end
+
+      set_lsp_highlights()
+      vim.api.nvim_create_autocmd("ColorScheme", { callback = set_lsp_highlights })
+
       vim.api.nvim_create_autocmd("BufWritePre", {
         pattern = "*.go",
         callback = function()
