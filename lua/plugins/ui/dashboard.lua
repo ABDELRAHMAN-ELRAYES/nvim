@@ -110,14 +110,14 @@ return {
       end
     end
 
-    -- Geometric NEOVIM banner with orbital starfield frame
+    -- Geometric NEOVIM banner
     local logo_final = {
-      "    ·  ✦       ███╗   ██╗ ███████╗  ██████╗  ██╗   ██╗ ██╗ ███╗   ███╗       ✦  ·    ",
-      "  ✦       ·    ████╗  ██║ ██╔════╝ ██╔═══██╗ ██║   ██║ ██║ ████╗ ████║    ·       ✦  ",
-      "     ·         ██╔██╗ ██║ █████╗   ██║   ██║ ██║   ██║ ██║ ██╔████╔██║         ·     ",
-      "  ·     ✦      ██║╚██╗██║ ██╔══╝   ██║   ██║ ╚██╗ ██╔╝ ██║ ██║╚██╔╝██║      ✦     ·  ",
-      "    ✦       ·  ██║ ╚████║ ███████╗ ╚██████╔╝  ╚████╔╝  ██║ ██║ ╚═╝ ██║  ·       ✦    ",
-      "       ·       ╚═╝  ╚═══╝ ╚══════╝  ╚═════╝    ╚═══╝   ╚═╝ ╚═╝     ╚═╝       ·       ",
+      "███╗   ██╗ ███████╗  ██████╗  ██╗   ██╗ ██╗ ███╗   ███╗",
+      "████╗  ██║ ██╔════╝ ██╔═══██╗ ██║   ██║ ██║ ████╗ ████║",
+      "██╔██╗ ██║ █████╗   ██║   ██║ ██║   ██║ ██║ ██╔████╔██║",
+      "██║╚██╗██║ ██╔══╝   ██║   ██║ ╚██╗ ██╔╝ ██║ ██║╚██╔╝██║",
+      "██║ ╚████║ ███████╗ ╚██████╔╝  ╚████╔╝  ██║ ██║ ╚═╝ ██║",
+      "╚═╝  ╚═══╝ ╚══════╝  ╚═════╝    ╚═══╝   ╚═╝ ╚═╝     ╚═╝",
     }
 
     local scramble_glyphs = { "░", "▒", "▓", "◈", "◇", "◆", "∙", "·" }
@@ -662,7 +662,7 @@ return {
 
       api.nvim_buf_clear_namespace(state.buf, ns, 0, -1)
 
-      -- Highlight Logo with Diagonal Flowing Aurora Wave + Twinkling Stars
+      -- Highlight Logo with Diagonal Flowing Aurora Wave
       local wave_phase = state.tick * 0.038
       for r_idx, _ in ipairs(logo_final) do
         local buf_row = meta.logo_rows[r_idx]
@@ -670,27 +670,13 @@ return {
         local row_cells = split_utf8_cells(line_str)
         for _, cell in ipairs(row_cells) do
           if cell.char ~= " " then
-            if cell.char == "✦" or cell.char == "·" then
-              local star_phase = math.sin(state.tick * 0.14 + r_idx * 1.7 + cell.col_idx * 0.5)
-              local star_hl = "DashboardStarMid"
-              if star_phase > 0.55 then
-                star_hl = "DashboardStarBright"
-              elseif star_phase < -0.25 then
-                star_hl = "DashboardStarDim"
-              end
-              api.nvim_buf_set_extmark(state.buf, ns, buf_row, cell.byte_start, {
-                end_col = cell.byte_end,
-                hl_group = star_hl,
-              })
-            else
-              local t = (cell.col_idx * 0.015 + r_idx * 0.065 - wave_phase) % 1.0
-              local g_idx = math.floor(t * NUM_GRADIENT_STEPS) + 1
-              g_idx = math.max(1, math.min(NUM_GRADIENT_STEPS, g_idx))
-              api.nvim_buf_set_extmark(state.buf, ns, buf_row, cell.byte_start, {
-                end_col = cell.byte_end,
-                hl_group = gradient_hls[g_idx],
-              })
-            end
+            local t = (cell.col_idx * 0.015 + r_idx * 0.065 - wave_phase) % 1.0
+            local g_idx = math.floor(t * NUM_GRADIENT_STEPS) + 1
+            g_idx = math.max(1, math.min(NUM_GRADIENT_STEPS, g_idx))
+            api.nvim_buf_set_extmark(state.buf, ns, buf_row, cell.byte_start, {
+              end_col = cell.byte_end,
+              hl_group = gradient_hls[g_idx],
+            })
           end
         end
       end
