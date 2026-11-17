@@ -35,6 +35,24 @@ vim.api.nvim_create_autocmd("CursorHold", {
 })
 
 require("vim-options")  -- load options before plugins
+
+vim.api.nvim_create_user_command("Manual", function(opts)
+  require("manual").open(opts.args)
+end, {
+  nargs = "?",
+  complete = function()
+    local ids = {}
+    for _, p in ipairs(require("manual").pages) do
+      table.insert(ids, p.id)
+    end
+    return ids
+  end,
+  desc = "Open Neovim Keybinds & Motions Manual",
+})
+vim.keymap.set("n", "<leader>m", function()
+  require("manual").open()
+end, { desc = "Open Keybinds & Motions Manual" })
+
 require("lazy").setup({
   spec = {
     { import = "plugins.lsp" },

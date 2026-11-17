@@ -46,9 +46,6 @@ return {
         -- Docker
         "dockerfile-language-server",
         "hadolint",
-
-        -- C++ build system
-        "cmake-language-server",
       },
       auto_update = false,
       run_on_start = true,
@@ -161,8 +158,10 @@ return {
         vim.lsp.config('gopls', {
           capabilities = capabilities,
           cmd = { exepath_or("gopls") },
-          root_dir = function(bufnr, _)
-            return vim.fs.root(bufnr, { "go.work", "go.mod", ".git" })
+          root_dir = function(bufnr, on_dir)
+            local root = vim.fs.root(bufnr, { "go.work", "go.mod", ".git" })
+              or vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":h")
+            on_dir(root)
           end,
           settings = {
             gopls = {

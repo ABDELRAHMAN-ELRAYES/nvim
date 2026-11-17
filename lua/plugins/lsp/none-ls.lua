@@ -26,7 +26,16 @@ return {
     add_if_executable("erb_lint", function() return null_ls.builtins.diagnostics.erb_lint end)
     add_if_executable("rubocop", function() return null_ls.builtins.diagnostics.rubocop end)
     add_if_executable("rubocop", function() return null_ls.builtins.formatting.rubocop end)
-    add_if_executable("golangci-lint", function() return null_ls.builtins.diagnostics.golangci_lint end)
+    add_if_executable("golangci-lint", function()
+      return null_ls.builtins.diagnostics.golangci_lint.with({
+        runtime_condition = function(params)
+          return vim.fs.root(params.bufnr, { "go.mod" }) ~= nil
+        end,
+        cwd = function(params)
+          return vim.fs.root(params.bufnr, { "go.mod" })
+        end,
+      })
+    end)
     add_if_executable("ruff", function() return require("none-ls.diagnostics.ruff") end)
     add_if_executable("ruff", function() return require("none-ls.formatting.ruff") end)
     add_if_executable("mypy", function() return null_ls.builtins.diagnostics.mypy end)
